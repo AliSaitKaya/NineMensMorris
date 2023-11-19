@@ -5,25 +5,44 @@ public class DraggableObject : MonoBehaviour
     private bool isDragging = false;
     private Vector3 offset;
 
-    void OnMouseDown()
+    private void Update()
     {
-        isDragging = true;
-        offset = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (isDragging)
+        {
+            MoveObjectWithMouse();
+        }
     }
 
-    void OnMouseUp()
+    private void OnMouseDown()
+    {
+        StartDragging();
+    }
+
+    private void OnMouseUp()
+    {
+        StopDragging();
+    }
+
+    private void StartDragging()
+    {
+        isDragging = true;
+        offset = transform.position - GetMouseWorldPos();
+    }
+
+    private void StopDragging()
     {
         isDragging = false;
     }
 
-    void Update()
+    private Vector3 GetMouseWorldPos()
     {
-        if (isDragging)
-        {
-            Vector3 cursorScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
-            Vector3 cursorWorldPoint = Camera.main.ScreenToWorldPoint(cursorScreenPoint);
-            transform.position = cursorWorldPoint + offset;
-        }
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = -Camera.main.transform.position.z;
+        return Camera.main.ScreenToWorldPoint(mousePos);
     }
 
+    private void MoveObjectWithMouse()
+    {
+        transform.position = GetMouseWorldPos() + offset;
+    }
 }
